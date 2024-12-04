@@ -6,11 +6,19 @@ import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.roomwordsample.retrofit.RequestTodo;
+import com.example.roomwordsample.retrofit.Todo;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class NewWordActivity extends AppCompatActivity {
 
@@ -27,7 +35,23 @@ public class NewWordActivity extends AppCompatActivity {
 		mEditWordView = findViewById(R.id.edit_word);
 		final Button button = findViewById(R.id.button_save);
 
+		Retrofit r = new Retrofit.Builder().baseUrl("https://jsonplaceholder.typicode.com").addConverterFactory(GsonConverterFactory.create()).build();
+
+		MainActivity.RequestTodos todos = r.create(MainActivity.RequestTodos.class);
+
 		button.setOnClickListener(view -> {
+			todos.postTodo(new RequestTodo(mEditWordView.getText().toString())).enqueue(new Callback<Todo>() {
+				@Override
+				public void onResponse(Call<Todo> call, Response<Todo> response) {
+					System.out.println(response.body().getId() + ": " + response.body().getTitle());
+				}
+
+				@Override
+				public void onFailure(Call<Todo> call, Throwable throwable) {
+					System.out.println(throwable.getMessage());
+				}
+			});
+
 			Intent replyIntent = new Intent();
 			if (TextUtils.isEmpty(mEditWordView.getText())) {
 				setResult(RESULT_CANCELED, replyIntent);

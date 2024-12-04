@@ -55,4 +55,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestImplementation libs.junit.v121
+
+    implementation libs.retrofit
+    implementation libs.retrofit2.converter.gson
 }
